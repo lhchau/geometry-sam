@@ -14,6 +14,7 @@ The figure below illustrates the effectiveness of this metric in depicting the l
 In the figure, `checkpoint1` and `checkpoint2` are notable because their perturbed gradients share the same sign as the current gradient. Experiments show that during training, over $60\%$ of parameters belong to `checkpoint1`. Conversely, `checkpoint2` starts at around $40\%$ in the early stage and decreases to $20\%$ in the later stage.
 
 ![](checkpoint2.png)
+
 In contrast, checkpoint3 and checkpoint4 depict scenarios where the signs of the perturbed and current gradients differ. During training, the number of parameters associated with checkpoint3 and checkpoint4 is initially very low, at around $3\%$, but increases to $10\%$ and $6\%$ respectively in the later stages.
 
 ## Observations
