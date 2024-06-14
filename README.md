@@ -17,57 +17,144 @@ In the figure, `checkpoint1` and `checkpoint2` are notable because their perturb
 
 In contrast, `checkpoint3` and `checkpoint4` depict scenarios where the signs of the perturbed and current gradients differ. During training, the number of parameters associated with `checkpoint3` and `checkpoint4` is initially very low, at around $3\%$, but increases to $10 \%$ and $6 \%$ respectively in the later stages.
 
-## Observations
-These results indicate that the loss landscape geometry is predominantly of the `checkpoint1` type. There is a transition from `checkpoint2` to `checkpoint3` and `checkpoint4` as training progresses.
+## Insights from Experiments
 
-These observations suggest that the loss landscape in the late stages of training comprises multiple minima regions, as evidenced by the increase in `checkpoint3` and `checkpoint4`. Surprisingly, the number of `checkpoint1` parameters does not decrease during training, implying that a large number of parameters remains on the ridge of the landscape
+- **Loss Landscape Geometry**:
+  - The geometry is predominantly characterized by `checkpoint1`.
+  - As training progresses, there is a transition through `checkpoint2`, `checkpoint3`, and `checkpoint4`.
+  - In the late stages of training, the loss landscape shows multiple minima regions, indicated by an increase in `checkpoint3` and `checkpoint4`.
+  - Surprisingly, the number of `checkpoint1` parameters does not decrease, suggesting a significant number of parameters remain on the ridge of the landscape.
 
 ## Further Experiments
-A curious question arises: which checkpoint among the four contributes the most to finding the flat minima in SAM? This warrants further investigation to enhance our understanding and effectiveness of the SAM algorithm.
 
-Experiment 1: We have ran the experiments to check that hypothesis and the results showed that if we only maintain the magnitude of all of the parameters belong to `checkpoint1` and replace others with magnitude of SGD. In this case, the finding flat minima ability of SAM still be remained while repeating this experiment with other `checkpoint` end up with the sharper minima.
+**Key Question**: Which checkpoint among the four contributes most to finding the flat minima in SAM?
 
-Conclusion, the realistic ability of SAM is effective learning rate, but not lie on direction modification.
+### Experiment 1:
+- **Hypothesis**: Maintaining the magnitude of all parameters in `checkpoint1` while replacing others with the magnitude from SGD would still retain SAM's ability to find flat minima.
+- **Results**: 
+  - SAM's ability to find flat minima was maintained.
+  - Repeating this experiment with other checkpoints resulted in sharper minima.
+- **Conclusion**: The realistic ability of SAM is due to its effective learning rate, evidenced by `checkpoint1`, not direction modification.
 
-**Research Question**: The ratio of perturbed gradient and current gradient belongs to `checkpoint1` maintaion through how many steps:
+### Experiment 2:
+- **Research Question**: How long does the ratio of perturbed gradient to current gradient in `checkpoint1` remain consistent?
+- **Results**: 
+  - At step 172, `checkpoint1` contained $6 \times 10^6$ parameters. 
+  - There was an overlap of about $4 \times 10^6$ parameters with later steps, maintaining around $4 \times 10^6$ (or 40%) even at the final step.
+  - This indicates that 40% of parameters require a higher learning rate than the initial one.
+  
+### Experiment 3:
+- **Research Question**: Are the same $4 \times 10^6$ parameters consistent over many steps?
+- **Answer**: No. After just 5 steps, the overlap reduced to $10^5$ and continued to diminish.
 
-Experiment 2: How many number of parameter belongs to `checkpoint1` in step 172 still belongs to `checkpoint1` in later steps. The results showed that at step 172, there are $6 \times 10^6$ parameters and the overlap of these parameters with parameter of later step always maintain around $4 \times 10^6$ even at the last step.
-
-That is a very surprising observation that always exists $4 \times 10^6 \sim 40\%$ parameters need the higher learning rate than the initial one. 
-
-Experiment 3: Would these $4 \times 10^6$ parameters be the same in many steps? Answer: No. The results showed that only after 5 steps the overlap parameters between these step reduce to $10^5$ and diminish soon.
-
-**Research Question**: Think about effective learning rate. Why large batch training has lower generalization, what if the reason is about low learning rate?
-
-Experiment 4: Comparing the results of ResNet18 on CIFAR100 with batch size 1024, SGD learning rate = 0.1 with learning rate = 0.2
-
-The gradient norm of experiment with bs 1024 is lower than bs 256 => Hint that the learning is slower when training with high batch size. In addition, when we increase learning rate with bs 1024 experiment, the test accuracy is improved.
+### Experiment 4:
+- **Research Question**: Does large batch training lower generalization due to low learning rates?
+- **Comparison**: 
+  - ResNet18 on CIFAR100 with batch size 1024 and SGD learning rates of 0.1 and 0.2.
+  - The gradient norm with batch size 1024 was lower than with batch size 256, hinting slower learning with a higher batch size.
+  - Increasing the learning rate in the batch size 1024 experiment improved test accuracy.
 
 ## Conclusion
-Finally, we can conclude:
-- The miracle mechanism of SAM is coming from the effective learning rate.
-- $60 \%$ **parameters cannot converge** even after 200 epochs. Perhaps, the explanation for this phenomenon is **learning rate decay**.
 
-### Further question
-- How can we identify these $60 \%$ parameters without computing perturbed gradients.
+- The effectiveness of SAM is attributed to its adaptive learning rate.
+- 60% of parameters do not converge even after 200 epochs, potentially due to learning rate decay.
 
-# Question 1:
+# More explorations
 
-**How many parameters in these $60 \%$ parameters are flat minima?**
+## Project 1:
 
-Methods to validate: Storing ratio and diagonal Hessian approximation of these parameters in each epoch (200 epochs). => Counting how many parameters in ratio belongs to top $60 \%$ minimum diagonal Hessian.
+## How Many Parameters in These 60% Parameters are in Flat Minima?
 
-If almost these parameters are flat minima => ?
-Else => ?
+We classified the parameters from `checkpoint1` into two types, as illustrated in the figure below:
 
-# Question 2: 
+![](checkpoint11.png)
 
-**Hypothesis: Escaping flat minima effect just by ill-defined gradient of mini-batch consider these minima as sharp (Which means high gradient)?**
+1. **Initial Approach: Diagonal Hessian**
+   - We initially attempted to use the diagonal Hessian to determine parameter flatness. However, the shape of this approximation differed from the gradient, making it challenging to proceed with this metric.
 
-$$
-m_t = \beta m_{t-1} + g_t
-$$
+2. **Current Approach: Gradient Magnitude**
+   - We decided to use the gradient magnitude as the metric to determine the flatness of each parameter. This approach provided a more straightforward and consistent method for our analysis.
 
-If optimizer is in flat region for B-1 batches ($m_{t-1} \sim 0$), and Bth batch think it as sharp region $g_t >> 0$ => $m_t >> 0$, means escaping flat minima effect.
+### Experiment Details
 
-Hence, an ideal case for optimizer always stay at flat region is the consistent flat agreement among all B batches.
+- **Data Preparation:**
+  - We stored the flattened tensors of `checkpoint1` and computed the absolute values of the gradient magnitudes.
+
+- **Threshold Determination:**
+  - Our hypothesis is that a higher gradient magnitude corresponds to higher flatness. To verify this, we sorted the `magnitude_gradient` tensor in decreasing order.
+  - We then determined the `threshold` as the value of `magnitude_gradient` at the position corresponding to the length of `checkpoint1`.
+
+- **Calculation of Flat Minima:**
+  - We calculated the percentage of parameters from `checkpoint1` with gradient magnitudes greater than the determined threshold. This percentage represents the proportion of parameters in `checkpoint1` that are in flat minima.
+
+By following this methodology, we can identify the flat minima among the parameters in `checkpoint1` and gain insights into their distribution.
+
+| Epoch | `mag_grad[len(checkpoint1)]` | percent % | 
+|-------|------------------------------|-----------|
+| 5   | 0.00013771              | 63%
+| 10   | 0.00015848              | 64%
+| 15   | 0.00016051              | 65%
+| 20   | 0.00016005              | 67%
+| 25   | 0.00015288              | 67%
+| 30   | 0.00017219              | 66%
+| 35   | 0.00014082              | 69%
+| 40   | 0.00019160              | 66%
+| 45   | 0.00017323              | 69%
+| 50   | 0.00016461              | 69%
+| 55   | 0.00018168              | 66%
+| 60   | 0.00019630              | 67%
+| 65   | 0.00017031              | 68%
+| 70   | 0.00017464              | 66%
+| 75   | 0.00016619              | 70%
+| 80   | 0.00017488              | 71%
+| 85   | 0.00018003              | 69%
+| 90   | 0.00016166              | 70%
+| 95   | 0.00011792              | 75%
+| 100   | 0.00014122              | 75%
+| 105   | 0.00015415              | 74%
+| 110   | 0.00014154              | 74%
+| 115   | 0.00019645              | 71%
+| 120   | 0.00019847              | 71%
+| 125   | 0.00017283              | 72%
+| 130   | 0.00018389              | 72%
+| 135   | 0.00013861              | 73%
+| 140   | 0.00014639              | 76%
+| 145   | 0.00012558              | 73%
+| 150   | 0.00012297              | 72%
+| 155   | 0.00009237              | 76%
+| 160   | 0.00007134              | 78%
+| 165   | 0.00012038              | 73%
+| 170   | 0.00010611              | 67%
+| 175   | 0.00011405              | 67%
+| 180   | 0.00004605              | 80%
+| 185   | 0.00007793              | 66%
+| 190   | 0.00008220              | 64%
+| 195   | 0.00004291              | 77%
+| 200   | 0.00015874              | 59%   
+
+### Insights from Experiment
+
+- **Checkpoint1 Gradient Magnitude**: 
+  - In `checkpoint1`, over 60% of parameters have a gradient magnitude exceeding the threshold.
+  - There is an observable trend of increasing gradient magnitude in the later stages.
+
+- **Sharp Region Identification**:
+  - The experiment suggests that most parameters in `checkpoint1` reside in a sharp region, which we denote as `checkpoint1.1`.
+
+## Project 2:
+
+**Statistic for checkpoint1?**
+
+Methods to validate: Counting how many parameters having ratio $< 1.2, < 1.5, < 2, < 4, < 8, < 16$, denoted as `checkpoint1.1`, `checkpoint1.2`, `checkpoint1.3`, `checkpoint1.4`, `checkpoint1.5`, `checkpoint1.6`, respectively. The results shown as below:
+
+![](image.png)
+
+### Observation
+
+- At first, the parameters belong to `checkpoint1.1` which have the ratio $< 1.2$ are highest, but then decrease fast. 
+- In the later stage, almost the parameters belong to `checkpoint1.1` has the ratio increase fast, evidenced by `checkpoint1.3`, `checkpoint1.4`, `checkpoint1.5`, `checkpoint1.6`.
+
+### Further Question: 
+- Instead of increasing magnitude follows ratio, increase with the fixed constant.
+- Why preconditioning $H(w)$ is not effecitve for deep learning especially over-parameterized setting?
+- Results of this project give intuition for IRE. Because IRE double learning rate for $95 \%$ parameters.
