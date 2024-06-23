@@ -29,6 +29,12 @@ In contrast, `checkpoint3` and `checkpoint4` depict scenarios where the signs of
 
 **Key Question**: Which checkpoint among the four contributes most to finding the flat minima in SAM?
 
+| rho           | ori-SAM | checkpoint1 | checkpoint2 | checkpoint3 | checkpoint4 | 
+|---------------|---------|-------------|-------------|-------------|-------------|
+| $\rho = 0.1$  | 78.84 % | 79.09 %     | 78.00 %     | 78.33 %     | 78.03 %
+| $\rho = 0.2$  | 79.55 % | 79.24 %     | 77.86 %     | 78.59 %     | 77.61 %
+| $\rho = 0.4$  | 79.21 % | 78.25 %     | 77.76 %     | 78.93 %     | 77.63 %
+
 ### Experiment 1:
 - **Hypothesis**: Maintaining the magnitude of all parameters in `checkpoint1` while replacing others with the magnitude from SGD would still retain SAM's ability to find flat minima.
 - **Results**: 
@@ -158,3 +164,12 @@ Methods to validate: Counting how many parameters having ratio $< 1.2, < 1.5, < 
 - Instead of increasing magnitude follows ratio, increase with the fixed constant.
 - Why preconditioning $H(w)$ is not effecitve for deep learning especially over-parameterized setting?
 - Results of this project give intuition for IRE. Because IRE double learning rate for $95 \%$ parameters.
+
+## Project 3:
+
+**Check the hypothesis: The number of `ratio > 1`, which is `checkpoint1` are higher, the generalization of SAM is higher?**
+
+- Methods to validate: We see that if the high increasing perturbation radius $\rho$ means the decreasing of `checkpoint1` because each parameter have their own threshold of not escaping attractor.
+- We run SAM with different perturbation radius value $\rho = 0.01, \rho=0.05, \rho=0.1$ and combining them parameters with `ratio > 1` and counting proportion of `checkpoint1`
+  - The worst case: the number of `checkpoint1` does not affect generalization.
+  - The best case: The number of `checkpoint1` have a correlation with generalization.
