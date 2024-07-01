@@ -29,11 +29,22 @@ In contrast, `checkpoint3` and `checkpoint4` depict scenarios where the signs of
 
 **Key Question**: Which checkpoint among the four contributes most to finding the flat minima in SAM?
 
-| rho           | ori-SAM | checkpoint1 | checkpoint2 | checkpoint3 | checkpoint4 | 
-|---------------|---------|-------------|-------------|-------------|-------------|
-| $\rho = 0.1$  | 78.84 % | 79.09 %     | 78.00 %     | 78.33 %     | 78.03 %
-| $\rho = 0.2$  | 79.55 % | 79.24 %     | 77.86 %     | 78.59 %     | 77.61 %
-| $\rho = 0.4$  | 79.21 % | 78.25 %     | 77.76 %     | 78.93 %     | 77.63 %
+| rho           | SGD | ori-SAM | checkpoint1 | checkpoint2 | checkpoint3 | checkpoint4 | 
+|---------------|---------|---------|-------------|-------------|-------------|-------------|
+| $\rho = 0.1$  | 77.36% | 78.84 % | **79.06** %     | 78.26 %     | 78.38 %     | 78.60 %
+| $\rho = 0.2$  | 77.36% | **79.55** % | **79.31** %     | 78.27 %     | 78.15 %     | 78.30 %
+| $\rho = 0.4$  | 77.36% | 79.21 % | **79.58** %     | 77.99 %     | 79.04 or 78.49 %     | 77.84 %
+| $\rho = 0.6$  | 77.36% | 77.98 % | **78.58** %     | ??? %     | 77.72 %     | ??? %
+| $\rho = 0.8$  | 77.36% | ??? % | **78.79** %     | ??? %     | 76.98 %     | ??? %
+
+| rho           | SGD | ori-SAM | checkpoint12 | checkpoint13 | checkpoint134 |  
+|---------------|---------|---------|-------------|-------------|-------------|
+| $\rho = 0.1$  | 77.36% | 78.84 % | 79.46 %     | **79.64** %     | 79.41 %   | 
+| $\rho = 0.2$  | 77.36% | 79.55 % | **79.78** %     | **79.81** %     | 78.94 %   | 
+| $\rho = 0.4$  | 77.36% | 79.21 % | **79.79** %     | 79.29 %     | 78.86 %  |
+| $\rho = 0.6$  | 77.36% | 77.98 % | 79.09 %     | 79.23 %     | **79.72** %  |
+| $\rho = 0.8$  | 77.36% | ??? % | 78.60 %     | 79.36 %     |  78.72 %  |
+
 
 ### Experiment 1:
 - **Hypothesis**: Maintaining the magnitude of all parameters in `checkpoint1` while replacing others with the magnitude from SGD would still retain SAM's ability to find flat minima.
