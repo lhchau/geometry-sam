@@ -25,7 +25,18 @@ In contrast, `checkpoint3` and `checkpoint4` depict scenarios where the signs of
   - In the late stages of training, the loss landscape shows multiple minima regions, indicated by an increase in `checkpoint3` and `checkpoint4`.
   - Surprisingly, the number of `checkpoint1` parameters does not decrease, suggesting a significant number of parameters remain on the ridge of the landscape.
 
+## Hypothesis: The parameters of SAM have the same Direction as SGD but their Magnitude changes, taking responsibility to increase test accuracy
+
 ## Further Experiments
+
+| rho           | ori-SAM | ckpt12 |
+|---------------|---------|---------|
+| $\rho = 0.1$  | 78.84 % | **79.46** %   (loss: 0.778)  | 
+| $\rho = 0.2$  | 79.55 % (loss: **0.7418**)| **79.78** %  (loss: 0.7682)   | 
+| $\rho = 0.4$  |79.21 % (loss: **0.7235**)| **79.79** %  (loss: 0.7525)   | 
+| $\rho = 0.6$  |77.98 % (loss: **0.7656**)| **79.09** %  (loss: 0.7719)   | 
+| $\rho = 0.8$  |  74.26 % (loss: 0.9172)| **78.60** % (loss: **0.7787**)    | 
+
 
 **Key Question**: Which checkpoint among the four contributes most to finding the flat minima in SAM?
 
