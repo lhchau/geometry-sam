@@ -27,8 +27,6 @@ In contrast, `checkpoint3` and `checkpoint4` depict scenarios where the signs of
 
 ## Hypothesis: The parameters of SAM have the same Direction as SGD but their Magnitude changes, taking responsibility to increase test accuracy
 
-## Further Experiments
-
 | rho           | ori-SAM | ckpt12 |
 |---------------|---------|---------|
 | $\rho = 0.1$  | 78.84 % | **79.46** %   (loss: 0.778)  | 
@@ -37,6 +35,18 @@ In contrast, `checkpoint3` and `checkpoint4` depict scenarios where the signs of
 | $\rho = 0.6$  |77.98 % (loss: **0.7656**)| **79.09** %  (loss: 0.7719)   | 
 | $\rho = 0.8$  |  74.26 % (loss: 0.9172)| **78.60** % (loss: **0.7787**)    | 
 
+## Hypothesis: The parameters of SAM have the opposite Direction of SGD, taking responsibility to reduce test loss
+
+
+| rho           | SGD |ori-SAM | ckpt3 | ckpt4
+|---------------|---------|---------|---------|---------|
+| $\rho = 0.1$  | 77.36% (loss: 0.9116)| 78.84 % | 78.38 % (loss: 0.8373)     | 78.60 % (loss: 0.8784)
+| $\rho = 0.2$  | 77.36% (loss: 0.9116) | 79.55 % (loss: **0.7418**)|  78.15 %  (loss: 0.8151)   | 78.30 % (loss: 0.8722)
+| $\rho = 0.4$  | 77.36% (loss: 0.9116) | 79.21 % (loss: **0.7235**)| 78.49 (loss: 0.7689)    | 77.84 % (loss: 0.8671)
+| $\rho = 0.6$  | 77.36% (loss: 0.9116) | 77.98 % (loss: **0.7656**)| 77.72 %   (loss: 0.8189)  | 77.48 % (loss: 0.8797)
+| $\rho = 0.8$  | 77.36% (loss: 0.9116) | 74.26 % (loss: 0.9172)| 76.98 %    (loss: **0.8440**) | 77.56 % (loss: 0.8732)
+
+## Further Experiments
 
 **Key Question**: Which checkpoint among the four contributes most to finding the flat minima in SAM?
 
