@@ -38,13 +38,13 @@ In contrast, `checkpoint3` and `checkpoint4` depict scenarios where the signs of
 ## Hypothesis: The parameters of SAM have the opposite Direction of SGD, taking responsibility to reduce test loss
 
 
-| rho           | SGD |ori-SAM | ckpt3 | ckpt4
-|---------------|---------|---------|---------|---------|
-| $\rho = 0.1$  | 77.36% (loss: 0.9116)| 78.84 % | 78.38 % (loss: 0.8373)     | 78.60 % (loss: 0.8784)
-| $\rho = 0.2$  | 77.36% (loss: 0.9116) | 79.55 % (loss: **0.7418**)|  78.15 %  (loss: 0.8151)   | 78.30 % (loss: 0.8722)
-| $\rho = 0.4$  | 77.36% (loss: 0.9116) | 79.21 % (loss: **0.7235**)| 78.49 (loss: 0.7689)    | 77.84 % (loss: 0.8671)
-| $\rho = 0.6$  | 77.36% (loss: 0.9116) | 77.98 % (loss: **0.7656**)| 77.72 %   (loss: 0.8189)  | 77.48 % (loss: 0.8797)
-| $\rho = 0.8$  | 77.36% (loss: 0.9116) | 74.26 % (loss: 0.9172)| 76.98 %    (loss: **0.8440**) | 77.56 % (loss: 0.8732)
+| rho           | SGD |ori-SAM | ckpt3 | ckpt4 | ckpt34
+|---------------|---------|---------|---------|---------|---------|
+| $\rho = 0.1$  | 77.36% (loss: 0.9116)| 78.84 % | 78.38 % (loss: 0.8373)     | 78.60 % (loss: 0.8784) | 77.29 % (loss: **0.7946**)
+| $\rho = 0.2$  | 77.36% (loss: 0.9116) | 79.55 % (loss: **0.7418**)|  78.15 %  (loss: 0.8151)   | 78.30 % (loss: 0.8722) | 78.14 % (loss: **0.7650**)
+| $\rho = 0.4$  | 77.36% (loss: 0.9116) | 79.21 % (loss: **0.7235**)| 78.49 (loss: 0.7689)    | 77.84 % (loss: 0.8671) | 78.51 % (loss: **0.7640**)
+| $\rho = 0.6$  | 77.36% (loss: 0.9116) | 77.98 % (loss: **0.7656**)| 77.72 %   (loss: 0.8189)  | 77.48 % (loss: 0.8797) | 78.60 % (loss: 0.8784)
+| $\rho = 0.8$  | 77.36% (loss: 0.9116) | 74.26 % (loss: 0.9172)| 76.98 %    (loss: **0.8440**) | 77.56 % (loss: 0.8732) | 78.60 % (loss: 0.8784)
 
 ## Further Experiments
 
@@ -66,6 +66,27 @@ In contrast, `checkpoint3` and `checkpoint4` depict scenarios where the signs of
 | $\rho = 0.6$  | 77.36% | 77.98 % | 79.09 %     | 79.23 %     | 77.21 % | **79.72** %  | 79.27 %     | 76.79% 
 | $\rho = 0.8$  | 77.36% | 74.26 % | 78.60 %     | **79.36** %     |  75.86 % |78.72 %  | 78.18 % | ???
 
+## SAME - Sharpness Aware Minimization Efficiency
+
+Setup variants:
+- SAMECKPT1: mask = ratio > 1
+- grad(SAMECKPT1) = grad(SAM) * mask * condition + grad(SAM) * not(mask)
+Similar to SAMECKPT2, SAMECKPT3, SAMECKPT4 
+
+| rho\SAMECKPT1 | ori-SAM | condition=0.5 | condition=1.2 | condition=1.5 | condition=2
+|---------------|---------|---------|---------------|---------|---------|
+| $\rho = 0.2$  | 79.55 % (loss: **0.7418**) | 78.50 %  (0.7758)   | ?? | ?? | ?? |
+| $\rho = 0.4$  |79.21 % (loss: **0.7235**)| 78.76 %  (0.7333)   | 79.31 %  (0.7157  ) | 79.05 % (0.7219) | 79.09 % (0.7265)
+
+| rho\SAMECKPT2 | ori-SAM | condition=0.667 | condition = 1.5 | condition = 2 |
+|---------------|---------|---------|---------------|---------|
+| $\rho = 0.4$  |79.21 % (loss: **0.7235**)| 78.70 %  (0.7337)   | 79.88 %  (0.7134  ) | 79.32 % (0.7260) | 79.09 % (0.7265)
+| $\rho = 0.6$  |77.98 % (loss: **0.7656**)| ??   | 79.33 (0.7171) | ??
+| $\rho = 0.8$  |  74.26 % (loss: 0.9172)| ??    | ?? | 78.99 (0.7158)
+
+| rho\SAMECKPT3 | ori-SAM | condition=0.1 | condition=0.5 | condition=1.5 | condition=2 | 
+|---------------|---------|---------|---------------|---------|---------|
+| $\rho = 0.4$  |79.21 % (loss: 0.7235)| **80.46** %  (**0.7026**)   | 79.57 %  (0.7198) | 79.54 % (0.7172) | 78.81 % (0.7335)
 
 ### Experiment 1:
 - **Hypothesis**: Maintaining the magnitude of all parameters in `checkpoint1` while replacing others with the magnitude from SGD would still retain SAM's ability to find flat minima.
