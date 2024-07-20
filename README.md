@@ -75,7 +75,7 @@ Similar to SAMECKPT2, SAMECKPT3, SAMECKPT4
 
 | rho\SAMECKPT1 | ori-SAM | condition=0.5 | condition=1.2 | condition=1.5 | condition=2
 |---------------|---------|---------|---------------|---------|---------|
-| $\rho = 0.2$  | 79.55 % (loss: **0.7418**) | 78.50 %  (0.7758)   | ?? | ?? | ?? |
+| $\rho = 0.2$  | 79.55 % (loss: **0.7418**) | ??   | ?? | ?? | 78.50 %  (0.7758) |
 | $\rho = 0.4$  |79.21 % (loss: **0.7235**)| 78.76 %  (0.7333)   | 79.31 %  (0.7157  ) | 79.05 % (0.7219) | 79.09 % (0.7265)
 
 | rho\SAMECKPT2 | ori-SAM | condition=0.667 | condition = 1.5 | condition = 2 |
